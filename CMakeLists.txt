@@ -6,10 +6,13 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 26)
+set(CMAKE_CXX_STANDARD 20)
 
 if(NOT MSVC)
-  add_compile_options(-Wall -Wextra -O3 -march=native)
+  add_compile_options(-Wall -Wextra -O3)
+  if(NOT CMAKE_CROSSCOMPILING)
+    add_compile_options(-march=native)
+  endif()
 endif()
 
 option(SANITIZE "Enable -fsanitize=signed-integer-overflow" OFF)
@@ -42,6 +45,12 @@ if(NOT HAVE_POSIX_REGEX AND NOT HAVE_STD_REGEX AND NOT HAVE_GNU_POSIX_REGEX)
 endif()
 FetchContent_MakeAvailable(benchmark)
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  # GCC doesn't treat _Static_assert as a keyword in C++ mode, but macOS SDK
+  # headers (mach/message.h) use it. Map it to the C++ equivalent.
+  target_compile_options(benchmark PRIVATE -D_Static_assert=static_assert)
+endif()
+
 #---------------------------------------------------------------------------
 # Weekday
 #---------------------------------------------------------------------------
@@ -51,5 +60,7 @@ add_executable(weekday_bench weekday/weekday_bench.cpp)
 target_link_libraries(weekday_bench benchmark::benchmark)
 if(APPLE)
   target_link_options(weekday_bench PRIVATE -Wl,-no_deduplicate)
-  target_compile_options(weekday_bench PRIVATE -mno-outline)
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(weekday_bench PRIVATE -mno-outline)
+  endif()
 endif()

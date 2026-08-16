@@ -8,9 +8,10 @@
 #include <vector>
 
 #include "weekday/algorithms/basic.hpp"
-#include "weekday/algorithms/benjoffe.hpp"
 #include "weekday/algorithms/hinnant.hpp"
 #include "weekday/algorithms/neri.hpp"
+#include "weekday/algorithms/benjoffe.hpp"
+#include "weekday/algorithms/benjoffe_extra.hpp"
 
 #ifdef __clang__
 #define NOVECTOR _Pragma("clang loop vectorize(disable)")
@@ -44,8 +45,8 @@ NOVECTOR                                                                        
             for (int32_t d : dates) {                                            \
                 d ^= carry;                                                      \
                 int32_t r = (expr);                                              \
+                benchmark::DoNotOptimize(r);                                     \
                 carry = r;                                                       \
-                benchmark::DoNotOptimize(carry);                                 \
             }                                                                    \
         } else if (batch_mode) {                                                 \
             /* 3 calls per load: prevents fast algorithms from appearing          \
@@ -71,17 +72,31 @@ NOVECTOR                                                                        
 }                                                                                \
 BENCHMARK(name);
 
-
 BENCH(bench_baseline,            d);
-BENCH(bench_benjoffe32_489k,     weekday_benjoffe32_489k(d));
-BENCH(bench_benjoffe64_full32,   weekday_benjoffe64_full32(d));
-BENCH(bench_benjoffe_iso32_489k, weekday_benjoffe_iso32_489k(d));
-BENCH(bench_hinnant32,           weekday_hinnant32(d));
-BENCH(bench_neri32,              weekday_neri32(d));
-BENCH(bench_neri64,              weekday_neri64(d));
-BENCH(bench_naive,               weekday_naive(d));
-BENCH(bench_compiled_naive,      weekday_compiled_naive(d));
-BENCH(bench_compiled_rust,       weekday_compiled_rust(d));
+
+BENCH(bench_naive,                weekday_naive(d));
+BENCH(bench_hinnant32,            weekday_hinnant32(d));
+BENCH(bench_rust_compiled,        weekday_rust_compiled(d));
+BENCH(bench_neri32,               weekday_neri32(d));
+BENCH(bench_neri64,               weekday_neri64(d));
+
+BENCH(bench_32unix_narrow,        get_weekday_32unix_narrow(d));
+BENCH(bench_32unix_medium,        get_weekday_32unix_medium(d));
+BENCH(bench_32unix_widen,         get_weekday_32unix_widen(d));
+BENCH(bench_32unix,               get_weekday_32unix(d));
+BENCH(bench_32unix_v2,            get_weekday_32unix_v2(d));
+BENCH(bench_32unix_v3,            get_weekday_32unix_v3(d));
+BENCH(bench_1st_attempt,          get_weekday_1st_attempt(d));
+
+BENCH(bench_32unix_forced_asm,    get_weekday_32unix_forced_asm(d));
+BENCH(bench_32unix_v2_forced_asm, get_weekday_32unix_v2_forced_asm(d));
+BENCH(bench_32unix_v3_forced_asm, get_weekday_32unix_v3_forced_asm(d));
+
+BENCH(bench_64unix,               get_weekday_64unix(d));
+BENCH(bench_64unix_narrow,        get_weekday_64unix_narrow(d));
+BENCH(bench_16unix,               get_weekday_16unix(d));
+BENCH(bench_8unix,                get_weekday_8unix(d));
+
 
 int main(int argc, char** argv) {
     std::vector<char*> bm_argv;

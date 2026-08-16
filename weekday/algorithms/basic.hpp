@@ -11,7 +11,7 @@ inline uint32_t weekday_naive_iso(int32_t d) {
     return (((d % 7) + 10) % 7) + 1;
 }
 
-inline uint32_t weekday_compiled_naive(int32_t rd) {
+inline uint32_t weekday_naive_compiled(int32_t rd) {
     int32_t  a = (int64_t)rd * -1840700269 >> 32;
     uint32_t b = ((a + rd) >> 2) - (rd >> 31);
     uint32_t c = rd - b * 8 + b + 11;
@@ -25,7 +25,7 @@ inline int32_t _signed_add(int32_t a, int32_t b) {
     return int32_t(uint32_t(a) + uint32_t(b));
 }
 
-inline uint32_t weekday_compiled_rust(int32_t rd) {
+inline uint32_t weekday_rust_compiled(int32_t rd) {
     int32_t a = (int64_t(_signed_add(rd, 4)) * -1840700269) >> 32;
     int32_t b = _signed_add(_signed_add(rd, 4), a);
     int32_t c = (b >> 2) + (uint32_t(b) >> 31);
