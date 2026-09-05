@@ -64,3 +64,23 @@ if(APPLE)
     target_compile_options(weekday_bench PRIVATE -mno-outline)
   endif()
 endif()
+
+#---------------------------------------------------------------------------
+# Time of Day
+#---------------------------------------------------------------------------
+
+add_executable(time_test time/time_test.cpp)
+add_executable(time_bench time/time_bench.cpp)
+target_link_libraries(time_bench benchmark::benchmark)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  # time_bench.cpp asks the vectorizer to at least try on every -vector loop
+  # (some algorithms genuinely can't vectorize, e.g. real 64-bit division) --
+  # that's expected and not worth a warning on every build.
+  target_compile_options(time_bench PRIVATE -Wno-pass-failed)
+endif()
+if(APPLE)
+  target_link_options(time_bench PRIVATE -Wl,-no_deduplicate)
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(time_bench PRIVATE -mno-outline)
+  endif()
+endif()

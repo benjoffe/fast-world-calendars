@@ -23,6 +23,7 @@ static size_t COUNT = 1 << 16;
 static std::vector<int32_t> dates;
 static bool latency_mode = false;
 static bool batch_mode   = false;
+static bool vector_mode  = false;
 
 static void init_dates() {
     std::mt19937 rng(0xDEADBEEF);
@@ -57,6 +58,18 @@ NOVECTOR                                                                        
                 { int32_t d = d_base ^ 1; int32_t r = (expr); benchmark::DoNotOptimize(r); } \
                 { int32_t d = d_base ^ 2; int32_t r = (expr); benchmark::DoNotOptimize(r); } \
             }                                                                    \
+        } else if (vector_mode) {                                                \
+            /* No NOVECTOR pragma, and no per-element DoNotOptimize (which is   \
+               itself a memory barrier that would serialize the loop and block  \
+               vectorization regardless of the pragma). Results are XOR-folded  \
+               into one accumulator, barriered once at the end, so the loop     \
+               stays a reduction the vectorizer is free to auto-vectorize. */   \
+            int32_t acc = 0;                                                    \
+            for (int32_t d : dates) {                                           \
+                int32_t r = (expr);                                             \
+                acc ^= r;                                                       \
+            }                                                                   \
+            benchmark::DoNotOptimize(acc);                                      \
         } else {                                                                 \
 NOVECTOR                                                                         \
             for (int32_t d : dates) {                                            \
@@ -116,6 +129,8 @@ int main(int argc, char** argv) {
             latency_mode = true;
         else if (std::strcmp(argv[i], "-batch") == 0)
             batch_mode = true;
+        else if (std::strcmp(argv[i], "-vector") == 0)
+            vector_mode = true;
         else if (const char* v = parse_val(i, "-count"))
             COUNT = std::stoul(v);
         else if (const char* v = parse_val(i, "-repeat")) {
@@ -124,6 +139,13 @@ int main(int argc, char** argv) {
             bm_argv.push_back(buf);
         } else
             bm_argv.push_back(argv[i]);
+    }
+
+    if (latency_mode && vector_mode) {
+        std::fprintf(stderr, "\x1b[31m-latency and -vector are mutually exclusive "
+                              "(each BENCH function only has one carry chain / "
+                              "one vector path; there's no combined latency+vector path)\x1b[0m\n");
+        return 1;
     }
 
     init_dates();
