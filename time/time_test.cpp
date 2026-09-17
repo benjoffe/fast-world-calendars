@@ -9,6 +9,7 @@
 #include <iomanip>
 
 #include "time/algorithms/benjoffe.hpp"
+#include "time/algorithms/consroe.hpp"
 #include "time/algorithms/neri.hpp"
 #include "time/algorithms/traditional.hpp"
 
@@ -269,6 +270,9 @@ int main() {
     constexpr uint64_t DAY_CENTI = 8'640'000ull;
     constexpr uint64_t DAY_MILLI = 86'400'000ull;
     constexpr uint64_t DAY_NANO  = 86'400'000'000'000ull;
+
+    run_search("time_consroe_1",       time_ref,    time_consroe_1,       1u, DAY_SEC);
+    run_search("time_consroe_2",       time_ref,    time_consroe_2,       1u, DAY_SEC);
 
     run_search("time_neri",            time_ref,    time_neri,            1u, DAY_SEC);
     run_search("time_neri_fp",         time_ref,    time_neri_fp,         1u, DAY_SEC);

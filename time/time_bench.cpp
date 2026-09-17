@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "time/algorithms/benjoffe.hpp"
+#include "time/algorithms/consroe.hpp"
 #include "time/algorithms/neri.hpp"
 #include "time/algorithms/traditional.hpp"
 
@@ -234,6 +235,8 @@ BENCH(bench_traditional2,    time_traditional2(t));
 BENCH(bench_traditional3,    time_traditional3(t));
 BENCH(bench_neri,            time_neri(t));
 BENCH(bench_neri_fp,         time_neri_fp(t));
+BENCH(bench_consroe_1,       time_consroe_1(t));
+BENCH(bench_consroe_2,       time_consroe_2(t));
 
 BENCH_SUBSEC(bench_traditional_ds1, time_traditional_ds1(t));
 BENCH_SUBSEC(bench_traditional_ds2, time_traditional_ds2(t));
