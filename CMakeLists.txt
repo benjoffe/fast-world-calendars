@@ -66,6 +66,20 @@ if(APPLE)
 endif()
 
 #---------------------------------------------------------------------------
+# Easter
+#---------------------------------------------------------------------------
+
+add_executable(easter_test easter/easter_test.cpp)
+add_executable(easter_bench easter/easter_bench.cpp)
+target_link_libraries(easter_bench benchmark::benchmark)
+if(APPLE)
+  target_link_options(easter_bench PRIVATE -Wl,-no_deduplicate)
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(easter_bench PRIVATE -mno-outline)
+  endif()
+endif()
+
+#---------------------------------------------------------------------------
 # Time of Day
 #---------------------------------------------------------------------------
 
