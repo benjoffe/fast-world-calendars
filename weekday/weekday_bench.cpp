@@ -10,6 +10,7 @@
 #include "weekday/algorithms/basic.hpp"
 #include "weekday/algorithms/hinnant.hpp"
 #include "weekday/algorithms/neri.hpp"
+#include "weekday/algorithms/sparks.hpp"
 #include "weekday/algorithms/benjoffe.hpp"
 #include "weekday/algorithms/benjoffe_extra.hpp"
 
@@ -87,12 +88,14 @@ BENCHMARK(name);
 
 BENCH(bench_baseline,            d);
 
+// Comparison functions:
 BENCH(bench_naive,                weekday_naive(d));
 BENCH(bench_hinnant32,            weekday_hinnant32(d));
 BENCH(bench_rust_compiled,        weekday_rust_compiled(d));
 BENCH(bench_neri32,               weekday_neri32(d));
 BENCH(bench_neri64,               weekday_neri64(d));
 
+// New functions:
 BENCH(bench_32unix_narrow,        get_weekday_32unix_narrow(d));
 BENCH(bench_32unix_medium,        get_weekday_32unix_medium(d));
 BENCH(bench_32unix_widen,         get_weekday_32unix_widen(d));
@@ -101,10 +104,15 @@ BENCH(bench_32unix_v2,            get_weekday_32unix_v2(d));
 BENCH(bench_32unix_v3,            get_weekday_32unix_v3(d));
 BENCH(bench_1st_attempt,          get_weekday_1st_attempt(d));
 
+// New functions (forced assembly):
 BENCH(bench_32unix_forced_asm,    get_weekday_32unix_forced_asm(d));
 BENCH(bench_32unix_v2_forced_asm, get_weekday_32unix_v2_forced_asm(d));
 BENCH(bench_32unix_v3_forced_asm, get_weekday_32unix_v3_forced_asm(d));
 
+// Variants contributed by others:
+BENCH(bench_sparks32,             weekday_sparks32(d));
+
+// Other bit-widths:
 BENCH(bench_64unix,               get_weekday_64unix(d));
 BENCH(bench_64unix_narrow,        get_weekday_64unix_narrow(d));
 BENCH(bench_16unix,               get_weekday_16unix(d));

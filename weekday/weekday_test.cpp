@@ -16,6 +16,7 @@
 #include "weekday/algorithms/basic.hpp"
 #include "weekday/algorithms/hinnant.hpp"
 #include "weekday/algorithms/neri.hpp"
+#include "weekday/algorithms/sparks.hpp"
 #include "weekday/algorithms/benjoffe.hpp"
 #include "weekday/algorithms/benjoffe_extra.hpp"
 
@@ -504,24 +505,29 @@ int main() {
 
     // Step 1. Test the functions showin the blog post at
     // https://www.benjoffe.com/fast-day-of-week
-    test("naive",          int32_t, weekday_naive,             ((x%7)+11)%7,     min32, max32);
-    test("naive_iso",      int32_t, weekday_naive_iso,         (((x%7)+10)%7)+1, min32, max32);
-    test("hinnant32",      int32_t, weekday_hinnant32,         ((x%7)+11)%7,     min32, max32 - 4);
-    test("neri32",         int32_t, weekday_neri32,            ((x%7)+11)%7,     min32, max32);
-    test("neri64",         int32_t, weekday_neri64,            ((x%7)+11)%7,     min32, max32);
+    test("naive",           int32_t, weekday_naive,           ((x%7)+11)%7,     min32, max32);
+    test("naive_iso",       int32_t, weekday_naive_iso,       (((x%7)+10)%7)+1, min32, max32);
+    test("hinnant32",       int32_t, weekday_hinnant32,       ((x%7)+11)%7,     min32, max32 - 4);
+    test("neri32",          int32_t, weekday_neri32,          ((x%7)+11)%7,     min32, max32);
+    test("neri64",          int32_t, weekday_neri64,          ((x%7)+11)%7,     min32, max32);
 
-    test("naive_compiled",  int32_t,  weekday_naive_compiled,  ((x%7)+11)%7,     min32, max32);
-    test("rust_compiled",   int32_t,  weekday_rust_compiled,   ((x%7)+11)%7,     min32, max32 - 4);
-    test("neri32_compiled", int32_t,  weekday_neri32_compiled, ((x%7)+11)%7,     -2147483648ll, 2147483647ll   );
+    test("naive_compiled",  int32_t, weekday_naive_compiled,  ((x%7)+11)%7,     min32, max32);
+    test("rust_compiled",   int32_t, weekday_rust_compiled,   ((x%7)+11)%7,     min32, max32 - 4);
+    test("neri32_compiled", int32_t, weekday_neri32_compiled, ((x%7)+11)%7,     -2147483648ll, 2147483647ll   );
 
-    test("1st_attempt",          int32_t,  get_weekday_1st_attempt,          ((x%7)+11)%7,      -2147483648ll, 2147483647ll   );
+    test("1st_attempt",     int32_t, get_weekday_1st_attempt, ((x%7)+11)%7,     -2147483648ll, 2147483647ll   );
 
-    // Step 2. Test a few specific variants where we us assembly calls to force better codegen.
+    // Step 2. Test a few specific variants where we use assembly calls to force better codegen.
     test("32unix_forced_asm",    int32_t,  get_weekday_32unix_forced_asm,    ((x%7)+11)%7,      -2147483648ll, 2147483647ll   );
     test("32unix_v2_forced_asm", int32_t,  get_weekday_32unix_v2_forced_asm, ((x%7)+11)%7,      -2147483648ll, 2147483647ll   );
     test("32unix_v3_forced_asm", int32_t,  get_weekday_32unix_v3_forced_asm, ((x%7)+11)%7,      -2147483648ll, 2147483647ll   );
 
-    // Step 3. Test all variants of the "Function Explorer".
+    // Step 3. Test variants contributed by others since the publication of the blog post:
+    test("sparks16", int16_t, weekday_sparks16, ((x%7)+11)%7,  -32768,    32767);
+    test("sparks32", int32_t, weekday_sparks32, ((x%7)+11)%7,  min32,     max32);
+    test("sparks64", int64_t, weekday_sparks64, ((x%7)+11)%7,  INT64_MIN, INT64_MAX);
+
+    // Step 4. Test all variants of the "Function Explorer".
     // The below test commands were copy/pasted directly from the export at
     // https://www.benjoffe.com/fast-day-of-week#fn
     test("8",              int8_t,   get_weekday_8,              ((x%7)+7)%7,      -128,          127            );
