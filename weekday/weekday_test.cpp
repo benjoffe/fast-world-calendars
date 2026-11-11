@@ -59,13 +59,13 @@ static bool g_prev_sampled = false;
 static bool g_after_sep    = true;
 
 static void table_sep() {
-    std::cout << AMBER << "+------------------------------+-------------+------------+------------+--------+" << RESET << "\n";
+    std::cout << AMBER << "+--------------------------+-------------+------------+------------+--------+" << RESET << "\n";
     g_after_sep = true;
 }
 
 static void table_header() {
     table_sep();
-    std::cout << AMBER << "| ALGORITHM                    |         MIN |        MAX |      YEARS |  RANGE |" << RESET << "\n";
+    std::cout << AMBER << "| ALGORITHM                |         MIN |        MAX |      YEARS |  RANGE |" << RESET << "\n";
     table_sep();
 }
 
@@ -113,7 +113,7 @@ static void print_sample_row(const std::string& c1, const std::string& c2,
     const char* col    = status ? AMBER : RESET;
     const char* st_col = status ? (failed ? RED : GREEN) : col;
     std::cout << col
-              << "| " << (c1_col ? c1_col : col) << pad_right(c1, 28) << col
+              << "| " << (c1_col ? c1_col : col) << pad_right(c1, 24) << col
               << " | " << pad_right(c2, 37)
               << " | " << st_col << pad_right(status ? status : "", 6) << col
               << " |" << RESET << "\n";
@@ -146,7 +146,7 @@ static void print_row(const char* label, int64_t mn, int64_t mx, bool done,
     if (uns && span == total) { mn_p = 0; mx_p = total - 1; }
 
     std::string name = std::string(label);
-    while ((int)name.size() < 28) name += " ";
+    while ((int)name.size() < 24) name += " ";
 
     const char* col = done ? AMBER : RESET;
 
